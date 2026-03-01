@@ -6,7 +6,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-app = Flask(__name__)
+import os
+app = Flask(__name__, template_folder=os.path.join(os.path.dirname(__file__), 'templates'))
 
 # Configure Hugging Face API
 HF_API_TOKEN = os.environ.get("HF_API_TOKEN")
