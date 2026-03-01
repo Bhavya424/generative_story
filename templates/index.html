@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CineAI — AI-Powered Film Production Studio</title>
+<!-- Google Fonts with crossorigin for faster loading -->
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #080808;
+  --deep: #0d0d0d;
+  --surface: #141414;
+  --card: #1a1a1a;
+  --border: #2a2a2a;
+  --gold: #c8a96e;
+  --gold-bright: #e8c97e;
+  --red: #c0392b;
+  --text: #e8e0d0;
+  --muted: #8a8070;
+  --cream: #f5f0e8;
+  /* Robust font stacks — works even if Google Fonts fails to load */
+  --font-display: 'Bebas Neue', 'Arial Black', 'Impact', sans-serif;
+  --font-body: 'Crimson Pro', 'Georgia', 'Times New Roman', serif;
+  --font-mono: 'JetBrains Mono', 'Consolas', 'Courier New', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--black);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 18px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Film grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Header */
+header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: linear-gradient(to bottom, rgba(8,8,8,0.98), transparent);
+  padding: 1.5rem 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  letter-spacing: 0.15em;
+  color: var(--cream);
+}
+
+.logo span {
+  color: var(--gold);
+}
+
+.logo-sub {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-top: -4px;
+}
+
+nav {
+  display: flex;
+  gap: 2rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+nav a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+
+nav a:hover, nav a.active { color: var(--gold); }
+
+/* Hero */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 6rem 2rem 4rem;
+  position: relative;
+  background: var(--black); /* explicit fallback */
+  color: var(--text);       /* ensure text color is set */
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(200,169,110,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 20% 80%, rgba(192,57,43,0.06) 0%, transparent 60%);
+}
+
+.film-strip {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 60px;
+  display: flex;
+  overflow: hidden;
+  opacity: 0.3;
+}
+
+.film-strip-bottom {
+  top: auto;
+  bottom: 0;
+}
+
+.film-hole {
+  width: 40px;
+  height: 30px;
+  margin: 12px 6px;
+  border: 2px solid var(--border);
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1.5rem;
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 10vw, 9rem);
+  letter-spacing: 0.05em;
+  line-height: 0.9;
+  color: var(--cream);
+  margin-bottom: 1.5rem;
+}
+
+h1 em {
+  font-style: normal;
+  color: var(--gold);
+  display: block;
+}
+
+.hero-desc {
+  max-width: 560px;
+  color: var(--muted);
+  font-size: 1.1rem;
+  font-weight: 300;
+  margin-bottom: 3rem;
+  font-style: italic;
+}
+
+.cta-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-primary {
+  background: var(--gold);
+  color: var(--black);
+  border: none;
+  padding: 1rem 2.5rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  transition: all 0.2s;
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+
+.btn-primary:hover {
+  background: var(--gold-bright);
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 1rem 2.5rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-outline:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* Studio Section */
+.studio {
+  padding: 6rem 3rem;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  letter-spacing: 0.05em;
+  color: var(--cream);
+  margin-bottom: 3rem;
+}
+
+/* Input Panel */
+.idea-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.idea-panel::before {
+  content: 'CONCEPT INPUT';
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.5em;
+  color: var(--muted);
+  position: absolute;
+  top: 1rem; left: 2.5rem;
+}
+
+.idea-panel::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--gold);
+}
+
+textarea {
+  width: 100%;
+  background: var(--deep);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  padding: 1.5rem;
+  resize: vertical;
+  min-height: 120px;
+  margin-top: 1.5rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+textarea:focus { border-color: var(--gold); }
+
+textarea::placeholder { color: var(--muted); font-style: italic; }
+
+.controls-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+select, input[type="number"] {
+  background: var(--deep);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+select:focus, input[type="number"]:focus { border-color: var(--gold); }
+
+label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+  position: relative;
+  top: 1px;
+}
+
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Generate buttons */
+.generate-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+/* Output Cards */
+.output-area {
+  margin-top: 2rem;
+}
+
+.screenplay-output {
+  background: var(--deep);
+  border: 1px solid var(--border);
+  padding: 3rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  color: var(--cream);
+  max-height: 600px;
+  overflow-y: auto;
+  display: none;
+}
+
+.screenplay-output::-webkit-scrollbar { width: 4px; }
+.screenplay-output::-webkit-scrollbar-track { background: var(--surface); }
+.screenplay-output::-webkit-scrollbar-thumb { background: var(--gold); }
+
+.characters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  display: none;
+}
+
+.character-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.character-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(to right, var(--gold), transparent);
+}
+
+.char-role {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.4rem;
+}
+
+.char-name {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  letter-spacing: 0.05em;
+  color: var(--cream);
+  margin-bottom: 1rem;
+}
+
+.char-age {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.char-section {
+  margin-bottom: 0.75rem;
+}
+
+.char-section h4 {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+
+.char-section p {
+  font-size: 0.95rem;
+  color: var(--text);
+  font-style: italic;
+}
+
+/* Production Plan */
+.plan-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  display: none;
+}
+
+.plan-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+}
+
+.plan-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.plan-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 0.9rem;
+  gap: 1rem;
+}
+
+.plan-item:last-child { border: none; }
+
+.plan-item-label { color: var(--muted); font-style: italic; flex-shrink: 0; }
+.plan-item-value { color: var(--text); text-align: right; }
+
+/* Sound Design */
+.sound-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  display: none;
+}
+
+/* Loading */
+.loading {
+  display: none;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.loading.show { display: flex; }
+
+.clapperboard {
+  font-size: 1.5rem;
+  animation: clap 0.6s infinite alternate;
+}
+
+@keyframes clap {
+  from { transform: rotate(-10deg); }
+  to { transform: rotate(10deg); }
+}
+
+/* Export */
+.export-bar {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+  display: none;
+}
+
+.export-bar.show { display: flex; }
+
+.btn-export {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-export:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* Features */
+.features {
+  background: var(--deep);
+  border-top: 1px solid var(--border);
+  padding: 6rem 3rem;
+}
+
+.features-inner {
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.feature-item {
+  padding: 2rem;
+  border: 1px solid var(--border);
+  position: relative;
+  transition: border-color 0.3s;
+}
+
+.feature-item:hover { border-color: var(--gold); }
+
+.feature-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.feature-item h3 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  letter-spacing: 0.1em;
+  color: var(--cream);
+  margin-bottom: 0.75rem;
+}
+
+.feature-item p {
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 2rem;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  color: var(--muted);
+}
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* opacity:1 ensures content is visible even if animation fails */
+.hero > * {
+  opacity: 1;
+  animation: fadeUp 0.8s ease both;
+}
+.hero > *:nth-child(2) { animation-delay: 0.1s; }
+.hero > *:nth-child(3) { animation-delay: 0.2s; }
+.hero > *:nth-child(4) { animation-delay: 0.3s; }
+.hero > *:nth-child(5) { animation-delay: 0.4s; }
+
+/* Notification */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--gold);
+  color: var(--black);
+  padding: 1rem 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  z-index: 9998;
+  transform: translateX(200%);
+  transition: transform 0.3s;
+}
+
+.toast.show { transform: translateX(0); }
+
+@media (max-width: 768px) {
+  header { padding: 1rem; }
+  nav { display: none; }
+  .studio { padding: 4rem 1.5rem; }
+  .plan-grid, .sound-grid { grid-template-columns: 1fr; }
+  .tabs { overflow-x: auto; }
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast">Copied to clipboard</div>
+
+<header>
+  <div>
+    <div class="logo">Cine<span>AI</span></div>
+    <div class="logo-sub">AI Film Production Studio</div>
+  </div>
+  <nav>
+    <a href="#studio" class="active">Studio</a>
+    <a href="#features">Features</a>
+  </nav>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="film-strip" id="filmstrip-top"></div>
+  
+  <div class="hero-eyebrow">✦ AI-Powered Pre-Production ✦</div>
+  <h1>Your Story<em>Begins Here</em></h1>
+  <p class="hero-desc">Transform raw ideas into professional screenplays, rich characters, and complete production plans — powered by AI.</p>
+  <div class="cta-group">
+    <button class="btn-primary" onclick="document.getElementById('studio').scrollIntoView({behavior:'smooth'})">Open Studio</button>
+    <button class="btn-outline" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Explore Features</button>
+  </div>
+  
+  <div class="film-strip film-strip-bottom" id="filmstrip-bottom"></div>
+</section>
+
+<!-- Studio -->
+<section class="studio" id="studio">
+  <div class="section-label">✦ Production Studio</div>
+  <div class="section-title">Start Creating</div>
+
+  <!-- Idea Input -->
+  <div class="idea-panel">
+    <textarea id="ideaInput" placeholder="Describe your film concept... A story about a jazz musician in 1940s New Orleans who discovers her deceased grandmother's secret life as a resistance fighter..."></textarea>
+    <div class="controls-row">
+      <div>
+        <label>Genre</label>
+        <select id="genreSelect">
+          <option>Drama</option>
+          <option>Thriller</option>
+          <option>Sci-Fi</option>
+          <option>Horror</option>
+          <option>Comedy</option>
+          <option>Action</option>
+          <option>Romance</option>
+          <option>Documentary</option>
+          <option>Fantasy</option>
+          <option>Western</option>
+        </select>
+      </div>
+      <div>
+        <label>Tone</label>
+        <select id="toneSelect">
+          <option>Serious</option>
+          <option>Dark</option>
+          <option>Hopeful</option>
+          <option>Comedic</option>
+          <option>Tense</option>
+          <option>Whimsical</option>
+          <option>Gritty</option>
+        </select>
+      </div>
+      <div>
+        <label>Budget Level</label>
+        <select id="budgetSelect">
+          <option>Low (Indie)</option>
+          <option>Medium</option>
+          <option>High (Studio)</option>
+        </select>
+      </div>
+      <div>
+        <label>Film Type</label>
+        <select id="durationSelect">
+          <option>Feature Film</option>
+          <option>Short Film</option>
+          <option>TV Pilot</option>
+          <option>Web Series</option>
+          <option>Documentary</option>
+        </select>
+      </div>
+      <div>
+        <label>Script Pages</label>
+        <input type="number" id="pagesInput" value="3" min="1" max="10">
+      </div>
+      <div>
+        <label>Characters</label>
+        <input type="number" id="charsInput" value="3" min="1" max="6">
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('screenplay')">Screenplay</button>
+    <button class="tab-btn" onclick="switchTab('characters')">Characters</button>
+    <button class="tab-btn" onclick="switchTab('production')">Production Plan</button>
+    <button class="tab-btn" onclick="switchTab('sound')">Sound Design</button>
+  </div>
+
+  <!-- Screenplay Tab -->
+  <div class="tab-content active" id="tab-screenplay">
+    <div class="generate-row">
+      <button class="btn-primary" onclick="generateScreenplay()">Generate Screenplay</button>
+    </div>
+    <div class="loading" id="loading-screenplay">
+      <span class="clapperboard">🎬</span> Writing your screenplay...
+    </div>
+    <div class="output-area">
+      <div class="screenplay-output" id="screenplayOutput"></div>
+      <div class="export-bar" id="export-screenplay">
+        <button class="btn-export" onclick="copyContent('screenplayOutput')">Copy</button>
+        <button class="btn-export" onclick="exportText('screenplayOutput', 'screenplay.txt')">Export .txt</button>
+        <button class="btn-export" onclick="exportText('screenplayOutput', 'screenplay.fdx')">Export .fdx</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Characters Tab -->
+  <div class="tab-content" id="tab-characters">
+    <div class="generate-row">
+      <button class="btn-primary" onclick="generateCharacters()">Generate Characters</button>
+    </div>
+    <div class="loading" id="loading-characters">
+      <span class="clapperboard">🎭</span> Building your cast...
+    </div>
+    <div class="output-area">
+      <div class="characters-grid" id="charactersGrid"></div>
+      <div class="export-bar" id="export-characters">
+        <button class="btn-export" onclick="copyCharacters()">Copy as JSON</button>
+        <button class="btn-export" onclick="exportCharacters()">Export .json</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Production Tab -->
+  <div class="tab-content" id="tab-production">
+    <div class="generate-row">
+      <button class="btn-primary" onclick="generateProductionPlan()">Generate Production Plan</button>
+    </div>
+    <div class="loading" id="loading-production">
+      <span class="clapperboard">🎥</span> Building your production plan...
+    </div>
+    <div class="output-area">
+      <div class="plan-grid" id="planGrid"></div>
+      <div class="export-bar" id="export-production">
+        <button class="btn-export" onclick="copyPlan()">Copy as JSON</button>
+        <button class="btn-export" onclick="exportPlan()">Export .json</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sound Tab -->
+  <div class="tab-content" id="tab-sound">
+    <div class="generate-row">
+      <button class="btn-primary" onclick="generateSoundDesign()">Generate Sound Design</button>
+    </div>
+    <div class="loading" id="loading-sound">
+      <span class="clapperboard">🎵</span> Composing your soundscape...
+    </div>
+    <div class="output-area">
+      <div class="sound-grid" id="soundGrid"></div>
+      <div class="export-bar" id="export-sound">
+        <button class="btn-export" onclick="copySoundDesign()">Copy as JSON</button>
+        <button class="btn-export" onclick="exportSoundDesign()">Export .json</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features" id="features">
+  <div class="features-inner">
+    <div class="section-label">✦ What We Offer</div>
+    <div class="section-title">Every Tool You Need</div>
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-icon">📜</div>
+        <h3>Screenplay Generation</h3>
+        <p>Professional-format scripts with proper scene headings, action lines, and dialogue — generated from a single idea.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🎭</div>
+        <h3>Character Development</h3>
+        <p>Rich, multi-dimensional characters with backstories, motivations, arcs, and unique personality traits.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🎬</div>
+        <h3>Production Planning</h3>
+        <p>Complete pre-production roadmaps including crew, locations, equipment, timeline, and budget breakdowns.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🎵</div>
+        <h3>Sound Design</h3>
+        <p>Comprehensive audio blueprints covering score, foley, music cues, and technical delivery specifications.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📦</div>
+        <h3>Export Support</h3>
+        <p>Download your work as TXT, JSON, or industry-standard formats ready for your production pipeline.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">⚡</div>
+        <h3>Creative Automation</h3>
+        <p>Powered by Gemini AI to accelerate your creative workflow and eliminate pre-production bottlenecks.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © 2025 CINEAI — AI Film Production Studio &nbsp;·&nbsp; Powered by Gemini &nbsp;·&nbsp; Built for Hackathon 2025
+</footer>
+
+<script>
+// Film strip generation
+function buildFilmStrip(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  for (let i = 0; i < 50; i++) {
+    const d = document.createElement('div');
+    d.className = 'film-hole';
+    el.appendChild(d);
+  }
+}
+buildFilmStrip('filmstrip-top');
+buildFilmStrip('filmstrip-bottom');
+
+let currentData = {};
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    const tabs = ['screenplay','characters','production','sound'];
+    b.classList.toggle('active', tabs[i] === tab);
+  });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function getIdea() {
+  const v = document.getElementById('ideaInput').value.trim();
+  if (!v) { showToast('Please enter a film concept first!'); return null; }
+  return v;
+}
+
+async function generateScreenplay() {
+  const idea = getIdea();
+  if (!idea) return;
+  
+  const loading = document.getElementById('loading-screenplay');
+  const output = document.getElementById('screenplayOutput');
+  const exportBar = document.getElementById('export-screenplay');
+  
+  loading.classList.add('show');
+  output.style.display = 'none';
+  exportBar.classList.remove('show');
+
+  try {
+    const res = await fetch('/api/generate-screenplay', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        idea,
+        genre: document.getElementById('genreSelect').value,
+        tone: document.getElementById('toneSelect').value,
+        pages: parseInt(document.getElementById('pagesInput').value)
+      })
+    });
+    const data = await res.json();
+    currentData.screenplay = data.screenplay;
+    output.textContent = data.screenplay;
+    output.style.display = 'block';
+    exportBar.classList.add('show');
+  } catch(e) {
+    output.textContent = 'Error: ' + e.message;
+    output.style.display = 'block';
+  }
+  loading.classList.remove('show');
+}
+
+async function generateCharacters() {
+  const idea = getIdea();
+  if (!idea) return;
+  
+  const loading = document.getElementById('loading-characters');
+  const grid = document.getElementById('charactersGrid');
+  const exportBar = document.getElementById('export-characters');
+  
+  loading.classList.add('show');
+  grid.style.display = 'none';
+  exportBar.classList.remove('show');
+  grid.innerHTML = '';
+
+  try {
+    const res = await fetch('/api/generate-characters', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ idea, num_characters: parseInt(document.getElementById('charsInput').value) })
+    });
+    const data = await res.json();
+    currentData.characters = data.characters;
+    
+    data.characters.forEach(char => {
+      const card = document.createElement('div');
+      card.className = 'character-card';
+      const traits = Array.isArray(char.personality) ? char.personality.join(', ') : char.personality;
+      card.innerHTML = `
+        <div class="char-role">${char.role || 'Character'}</div>
+        <div class="char-name">${char.name || 'Unknown'}</div>
+        <div class="char-age">Age: ${char.age || 'N/A'}</div>
+        <div class="char-section"><h4>Background</h4><p>${char.background || ''}</p></div>
+        <div class="char-section"><h4>Personality</h4><p>${traits || ''}</p></div>
+        <div class="char-section"><h4>Motivation</h4><p>${char.motivation || ''}</p></div>
+        <div class="char-section"><h4>Character Arc</h4><p>${char.arc || ''}</p></div>
+        ${char.quirks ? `<div class="char-section"><h4>Quirks</h4><p>${char.quirks}</p></div>` : ''}
+      `;
+      grid.appendChild(card);
+    });
+    
+    grid.style.display = 'grid';
+    exportBar.classList.add('show');
+  } catch(e) {
+    grid.innerHTML = `<p style="color:var(--muted)">Error: ${e.message}</p>`;
+    grid.style.display = 'grid';
+  }
+  loading.classList.remove('show');
+}
+
+async function generateProductionPlan() {
+  const idea = getIdea();
+  if (!idea) return;
+  
+  const loading = document.getElementById('loading-production');
+  const grid = document.getElementById('planGrid');
+  const exportBar = document.getElementById('export-production');
+  
+  loading.classList.add('show');
+  grid.style.display = 'none';
+  exportBar.classList.remove('show');
+  grid.innerHTML = '';
+
+  try {
+    const res = await fetch('/api/generate-production-plan', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        idea,
+        budget: document.getElementById('budgetSelect').value,
+        duration: document.getElementById('durationSelect').value
+      })
+    });
+    const data = await res.json();
+    currentData.plan = data.plan;
+    const plan = data.plan;
+    
+    const sections = [
+      { key: 'timeline', title: 'Production Timeline', render: items => items.map(i => `<div class="plan-item"><span class="plan-item-label">${i.phase}</span><span class="plan-item-value">${i.duration}</span></div>`).join('') },
+      { key: 'crew', title: 'Core Crew', render: items => items.map(i => `<div class="plan-item"><span class="plan-item-label">${i.role}</span><span class="plan-item-value">${i.count} · ${i.notes || ''}</span></div>`).join('') },
+      { key: 'locations', title: 'Key Locations', render: items => items.map(i => `<div class="plan-item"><span class="plan-item-label">${i.name}</span><span class="plan-item-value">${i.type}</span></div>`).join('') },
+      { key: 'budget_breakdown', title: 'Budget Breakdown', render: items => items.map(i => `<div class="plan-item"><span class="plan-item-label">${i.category}</span><span class="plan-item-value">${i.percentage}%</span></div>`).join('') },
+    ];
+
+    sections.forEach(s => {
+      if (plan[s.key] && Array.isArray(plan[s.key])) {
+        const card = document.createElement('div');
+        card.className = 'plan-card';
+        card.innerHTML = `<h3>${s.title}</h3>${s.render(plan[s.key])}`;
+        grid.appendChild(card);
+      }
+    });
+
+    // Sound design from plan
+    if (plan.sound_design) {
+      const sd = plan.sound_design;
+      const card = document.createElement('div');
+      card.className = 'plan-card';
+      card.innerHTML = `<h3>Sound Design Brief</h3>
+        ${sd.music_style ? `<div class="plan-item"><span class="plan-item-label">Music Style</span><span class="plan-item-value">${sd.music_style}</span></div>` : ''}
+        ${sd.sound_effects ? `<div class="plan-item"><span class="plan-item-label">Sound Effects</span><span class="plan-item-value">${sd.sound_effects}</span></div>` : ''}
+        ${sd.post_production ? `<div class="plan-item"><span class="plan-item-label">Post Production</span><span class="plan-item-value">${sd.post_production}</span></div>` : ''}`;
+      grid.appendChild(card);
+    }
+
+    if (plan.equipment && Array.isArray(plan.equipment)) {
+      const card = document.createElement('div');
+      card.className = 'plan-card';
+      card.innerHTML = `<h3>Equipment</h3>` + plan.equipment.map(e => `<div class="plan-item"><span class="plan-item-label">${e.category}</span><span class="plan-item-value">${Array.isArray(e.items) ? e.items.join(', ') : e.items}</span></div>`).join('');
+      grid.appendChild(card);
+    }
+
+    grid.style.display = 'grid';
+    exportBar.classList.add('show');
+  } catch(e) {
+    grid.innerHTML = `<p style="color:var(--muted)">Error: ${e.message}</p>`;
+    grid.style.display = 'grid';
+  }
+  loading.classList.remove('show');
+}
+
+async function generateSoundDesign() {
+  const idea = getIdea();
+  if (!idea) return;
+  
+  const loading = document.getElementById('loading-sound');
+  const grid = document.getElementById('soundGrid');
+  const exportBar = document.getElementById('export-sound');
+  
+  loading.classList.add('show');
+  grid.style.display = 'none';
+  exportBar.classList.remove('show');
+  grid.innerHTML = '';
+
+  try {
+    const res = await fetch('/api/generate-sound-design', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        idea,
+        genre: document.getElementById('genreSelect').value,
+        mood: document.getElementById('toneSelect').value
+      })
+    });
+    const data = await res.json();
+    currentData.sound = data.sound_design;
+    const sd = data.sound_design;
+
+    const makeCard = (title, content) => {
+      const c = document.createElement('div');
+      c.className = 'plan-card';
+      c.innerHTML = `<h3>${title}</h3>${content}`;
+      return c;
+    };
+
+    if (sd.score) {
+      const s = sd.score;
+      grid.appendChild(makeCard('Score & Music', `
+        <div class="plan-item"><span class="plan-item-label">Style</span><span class="plan-item-value">${s.style || ''}</span></div>
+        <div class="plan-item"><span class="plan-item-label">Influences</span><span class="plan-item-value">${Array.isArray(s.influences) ? s.influences.join(', ') : (s.influences || '')}</span></div>
+        <div class="plan-item"><span class="plan-item-label">Instruments</span><span class="plan-item-value">${Array.isArray(s.instruments) ? s.instruments.join(', ') : (s.instruments || '')}</span></div>
+        ${Array.isArray(s.themes) ? s.themes.map(t => `<div class="plan-item"><span class="plan-item-label">Theme</span><span class="plan-item-value">${t}</span></div>`).join('') : ''}
+      `));
+    }
+
+    if (sd.music_cues && Array.isArray(sd.music_cues)) {
+      grid.appendChild(makeCard('Music Cues', sd.music_cues.map(c =>
+        `<div class="plan-item"><span class="plan-item-label">${c.moment}</span><span class="plan-item-value">${c.emotion} · ${c.tempo}</span></div>`
+      ).join('')));
+    }
+
+    if (sd.sound_palette && Array.isArray(sd.sound_palette)) {
+      grid.appendChild(makeCard('Sound Palette', sd.sound_palette.map(s =>
+        `<div class="plan-item"><span class="plan-item-label">${s.scene_type}</span><span class="plan-item-value">${Array.isArray(s.sounds) ? s.sounds.join(', ') : (s.sounds || '')}</span></div>`
+      ).join('')));
+    }
+
+    if (sd.foley && Array.isArray(sd.foley)) {
+      grid.appendChild(makeCard('Foley', sd.foley.map(f =>
+        `<div class="plan-item"><span class="plan-item-label">${f.category}</span><span class="plan-item-value">${Array.isArray(f.key_sounds) ? f.key_sounds.join(', ') : (f.key_sounds || '')}</span></div>`
+      ).join('')));
+    }
+
+    if (sd.technical_specs) {
+      const t = sd.technical_specs;
+      grid.appendChild(makeCard('Technical Specs', `
+        <div class="plan-item"><span class="plan-item-label">Format</span><span class="plan-item-value">${t.format || ''}</span></div>
+        <div class="plan-item"><span class="plan-item-label">Sample Rate</span><span class="plan-item-value">${t.sample_rate || ''}</span></div>
+        <div class="plan-item"><span class="plan-item-label">Channels</span><span class="plan-item-value">${t.channels || ''}</span></div>
+        <div class="plan-item"><span class="plan-item-label">Delivery</span><span class="plan-item-value">${t.delivery || ''}</span></div>
+      `));
+    }
+
+    grid.style.display = 'grid';
+    exportBar.classList.add('show');
+  } catch(e) {
+    grid.innerHTML = `<p style="color:var(--muted)">Error: ${e.message}</p>`;
+    grid.style.display = 'grid';
+  }
+  loading.classList.remove('show');
+}
+
+// Export functions
+function copyContent(id) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text);
+  showToast('Copied to clipboard!');
+}
+
+function exportText(id, filename) {
+  const text = document.getElementById(id).textContent;
+  download(text, filename, 'text/plain');
+}
+
+function exportJSON(data, filename) {
+  download(JSON.stringify(data, null, 2), filename, 'application/json');
+}
+
+function download(content, filename, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content], {type}));
+  a.download = filename;
+  a.click();
+}
+
+function copyCharacters() {
+  navigator.clipboard.writeText(JSON.stringify(currentData.characters, null, 2));
+  showToast('Characters copied!');
+}
+function exportCharacters() { exportJSON(currentData.characters, 'characters.json'); }
+function copyPlan() {
+  navigator.clipboard.writeText(JSON.stringify(currentData.plan, null, 2));
+  showToast('Plan copied!');
+}
+function exportPlan() { exportJSON(currentData.plan, 'production-plan.json'); }
+function copySoundDesign() {
+  navigator.clipboard.writeText(JSON.stringify(currentData.sound, null, 2));
+  showToast('Sound design copied!');
+}
+function exportSoundDesign() { exportJSON(currentData.sound, 'sound-design.json'); }
+</script>
+</body>
+</html>
